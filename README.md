@@ -1,4 +1,4 @@
-# 🌿 GramSwasth: Revolutionizing Rural Healthcare
+# 🌿 SwasthAI: Revolutionizing Healthcare
 
 A comprehensive, secure, and user-friendly health management platform built with Next.js, TypeScript, and Supabase. SwasthAI enables users to manage their personal health information, family health records, medical appointments, and important documents in one centralized, secure location.
 
