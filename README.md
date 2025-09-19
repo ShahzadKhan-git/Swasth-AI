@@ -169,9 +169,6 @@ Body:
 
 > **Because everyone deserves good health—anytime, anywhere.**
 
-## 👤 Author
-
-For any questions or issues, please open an issue on GitHub: [@Siddharth Mishra](https://github.com/Sid3503)
 
 ---
 
