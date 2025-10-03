@@ -51,12 +51,22 @@ export default function MedicalChatbot() {
   const chunksRef = useRef<Blob[]>([])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    // Add a small delay to ensure DOM has updated
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest"
+      })
+    }, 100)
   }
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    // Only auto-scroll when new messages are added, not when the component first loads
+    if (messages.length > 1) {
+      scrollToBottom()
+    }
+  }, [messages.length])
 
   // Check API status on component mount
   useEffect(() => {
@@ -222,35 +232,35 @@ export default function MedicalChatbot() {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <Card className="swasth-chatbot dark:swasth-chatbot-dark border-2">
+      <Card className="bg-white/80 backdrop-blur-lg border border-slate-200/50 shadow-2xl rounded-3xl overflow-hidden">
         <CardContent className="p-0">
           {/* Header */}
-          <div className="p-4 border-b swasth-gradient dark:swasth-gradient-dark flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-full swasth-pulse">
-              <Stethoscope className="h-6 w-6 text-primary" />
+          <div className="p-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 flex items-center gap-4">
+            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg animate-pulse">
+              <Stethoscope className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground dark:text-foreground">SwasthAI Medical Assistant</h2>
-              <p className="text-sm text-muted-foreground dark:text-muted-foreground/90">Your AI-powered healthcare companion</p>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white mb-1">SwasthAI Medical Assistant</h2>
+              <p className="text-blue-100 text-sm">Your AI-powered healthcare companion • Powered by Google Gemini</p>
             </div>
-            <div className="ml-auto flex items-center gap-2">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2">
                 {apiStatus === 'online' && (
                   <>
-                    <Activity className="h-4 w-4 text-green-500 pulse-animation" />
-                    <span className="text-sm text-green-600 dark:text-green-400">Gemini AI Online</span>
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-xs font-medium text-white">Online</span>
                   </>
                 )}
                 {apiStatus === 'offline' && (
                   <>
-                    <div className="h-4 w-4 rounded-full bg-red-500" />
-                    <span className="text-sm text-red-600 dark:text-red-400">AI Offline</span>
+                    <div className="w-2 h-2 rounded-full bg-red-400" />
+                    <span className="text-xs font-medium text-white">Offline</span>
                   </>
                 )}
                 {apiStatus === 'checking' && (
                   <>
-                    <div className="h-4 w-4 rounded-full bg-yellow-500 animate-pulse" />
-                    <span className="text-sm text-yellow-600 dark:text-yellow-400">Connecting...</span>
+                    <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                    <span className="text-xs font-medium text-white">Connecting</span>
                   </>
                 )}
               </div>
@@ -258,32 +268,43 @@ export default function MedicalChatbot() {
           </div>
 
           {/* Messages Container */}
-          <div className="h-96 overflow-y-auto p-4 space-y-4 swasth-gradient dark:swasth-gradient-dark">
+          <div className="h-96 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-slate-50 to-blue-50/30 relative scroll-smooth">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <svg className="w-full h-full" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" fillRule="evenodd">
+                  <g fill="#4F46E5" fillOpacity="0.1">
+                    <circle cx="30" cy="30" r="4"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
             <AnimatePresence>
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className={`relative flex gap-4 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                 >
-                  <div className={`p-2 rounded-full ${
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg ${
                     message.type === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-accent text-accent-foreground'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' 
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
                   }`}>
                     {message.type === 'user' ? (
-                      <User className="h-4 w-4" />
+                      <User className="h-5 w-5" />
                     ) : (
-                      <Bot className="h-4 w-4" />
+                      <Bot className="h-5 w-5" />
                     )}
                   </div>
-                  <div className={`max-w-[80%] ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
-                    <div className={`p-3 rounded-lg ${
+                  <div className={`max-w-[75%] ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
+                    <div className={`relative p-4 rounded-2xl shadow-lg backdrop-blur-sm ${
                       message.type === 'user'
-                        ? 'swasth-message-user ml-auto'
-                        : 'swasth-message-bot dark:swasth-message-bot-dark'
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white ml-auto'
+                        : 'bg-white/90 text-slate-800 border border-slate-200/50'
                     }`}>
                       {message.mediaType === 'image' && message.mediaUrl && (
                         <img 
@@ -297,9 +318,20 @@ export default function MedicalChatbot() {
                           <source src={message.mediaUrl} type="audio/wav" />
                         </audio>
                       )}
-                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                      <div className={`text-sm leading-relaxed whitespace-pre-wrap ${
+                        message.type === 'user' ? 'text-white' : 'text-slate-700'
+                      }`}>{message.content}</div>
+                      
+                      {/* Message tail */}
+                      <div className={`absolute top-4 w-3 h-3 ${
+                        message.type === 'user'
+                          ? '-right-1 bg-gradient-to-br from-blue-500 to-indigo-600 transform rotate-45'
+                          : '-left-1 bg-white/90 border-l border-t border-slate-200/50 transform rotate-45'
+                      }`} />
                     </div>
-                    <p className="text-xs text-muted-foreground dark:text-muted-foreground/80 mt-1">
+                    <p className={`text-xs mt-2 px-1 ${
+                      message.type === 'user' ? 'text-right text-blue-600' : 'text-left text-slate-500'
+                    }`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
@@ -309,22 +341,23 @@ export default function MedicalChatbot() {
             
             {isLoading && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative flex gap-4"
               >
-                <div className="p-2 rounded-full bg-primary/20 text-primary swasth-pulse">
-                  <Bot className="h-4 w-4" />
+                <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg">
+                  <Bot className="h-5 w-5" />
                 </div>
-                <div className="swasth-message-bot dark:swasth-message-bot-dark rounded-lg p-3">
-                  <div className="flex items-center gap-2">
+                <div className="bg-white/90 text-slate-800 border border-slate-200/50 rounded-2xl p-4 shadow-lg backdrop-blur-sm relative">
+                  <div className="flex items-center gap-3">
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-sm text-foreground dark:text-foreground/90">SwasthAI is typing...</span>
+                    <span className="text-sm text-slate-600 font-medium">SwasthAI is thinking...</span>
                   </div>
+                  <div className="absolute top-4 -left-1 w-3 h-3 bg-white/90 border-l border-t border-slate-200/50 transform rotate-45" />
                 </div>
               </motion.div>
             )}
@@ -332,33 +365,33 @@ export default function MedicalChatbot() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t swasth-gradient dark:swasth-gradient-dark">
-            <div className="flex gap-2">
+          <div className="p-6 bg-white/80 backdrop-blur-sm border-t border-slate-200/50">
+            <div className="flex gap-3">
               <div className="relative flex-1">
                 <Input
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your health question here..."
-                  className="pr-12 bg-background border-border text-foreground dark:text-foreground placeholder:text-muted-foreground/70 dark:placeholder:text-muted-foreground/70"
+                  placeholder="Ask me about your health concerns..."
+                  className="pr-12 h-12 bg-white/90 border-2 border-slate-200/50 rounded-2xl text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-200 shadow-sm"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowOptions(!showOptions)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-100 rounded-full"
                 >
-                  {showOptions ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                  {showOptions ? <X className="h-4 w-4 text-slate-600" /> : <Plus className="h-4 w-4 text-slate-600" />}
                 </Button>
               </div>
               
               <Button
                 onClick={() => handleSendMessage(inputText)}
                 disabled={!inputText.trim() || isLoading}
-                className="bg-primary hover:bg-primary/90"
+                className="h-12 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               </Button>
             </div>
 

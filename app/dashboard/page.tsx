@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
+import Navbar from '@/components/navbar'
+import Link from 'next/link'
 import { 
   profileOperations, 
   familyOperations, 
@@ -20,7 +22,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { CalendarDays, Users, FileText, TrendingUp, Plus } from 'lucide-react'
+import { 
+  CalendarDays, 
+  Users, 
+  FileText, 
+  TrendingUp, 
+  Plus,
+  Activity,
+  Heart,
+  Stethoscope,
+  Calendar,
+  Bell,
+  Settings,
+  UserPlus,
+  BookOpen,
+  BarChart3,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  AlertCircle,
+  CheckCircle,
+  Home,
+  User,
+  Shield,
+  Zap,
+  Search,
+  Filter,
+  Download,
+  Upload,
+  Eye,
+  Edit,
+  ChevronRight,
+  ArrowUpRight
+} from 'lucide-react'
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth()
@@ -135,22 +170,53 @@ export default function DashboardPage() {
 
   if (isLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading dashboard...</div>
-      </div>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="text-lg text-gray-600">Loading dashboard...</div>
+          </div>
+        </div>
+      </>
     )
   }
 
   if (!user) {
-    return <div>Please log in to view your dashboard.</div>
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🔒</span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Restricted</h2>
+              <p className="text-gray-600 mb-6">Please log in to view your dashboard.</p>
+              <Link 
+                href="/auth/login"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                <span>🔑</span>
+                <span className="ml-2">Login to Continue</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </>
+    )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back, {profile?.full_name || user.email}!</p>
-      </div>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-600 mt-2">Welcome back, {profile?.full_name || user.email}!</p>
+          </div>
 
       {/* Profile Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -357,6 +423,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+        </div>
+      </div>
+    </>
   )
 }
